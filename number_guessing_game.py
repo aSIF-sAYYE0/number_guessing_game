@@ -26,10 +26,14 @@ def get_number_to_guess():
     return random.randint(1, 100)
 
 def play_game():
+    difficult_chances = {10: 'easy', 5: 'medium', 3: 'hard'}
+
     chances = select_difficulty()
     number_to_guess = get_number_to_guess()
+    print(number_to_guess)
     attempts = 0
     start_time = time.time()
+    difficulty = difficult_chances[chances]
 
     print(f"\nGreat! You have selected the difficulty level with {chances} chances.")
     print("Let's start the game!")
@@ -52,36 +56,31 @@ def play_game():
             elapsed_time = end_time - start_time
             print(f"Congratulations! You guessed the correct number in {attempts} attempts.")
             print(f"Time taken: {elapsed_time:.2f} seconds.")
-            return attempts
+            return attempts, difficulty, True
 
     print(f"Sorry, you've run out of chances. The correct number was {number_to_guess}.")
-    return attempts
+    return attempts, difficulty, False
 
 def main():
-    high_scores = {'easy': float('inf'), 'medium': float('inf'), 'hard': float('inf')}
+    high_scores = {'easy': 0, 'medium': 0, 'hard': 0}
 
     while True:
         display_welcome_message()
-        attempts = play_game()
+        attempts, difficulty, win = play_game()
 
-        if attempts < high_scores['easy']:
-            print("New high score for Easy difficulty!")
-            high_scores['easy'] = attempts
-        elif attempts < high_scores['medium']:
-            print("New high score for Medium difficulty!")
-            high_scores['medium'] = attempts
-        elif attempts < high_scores['hard']:
-            print("New high score for Hard difficulty!")
-            high_scores['hard'] = attempts
+        if win and (attempts < high_scores[difficulty] or not high_scores[difficulty]):
+            print(f"New high score for {difficulty.capitalize()} difficulty!")
+            high_scores[difficulty] = attempts
 
         print("\nCurrent High Scores:")
-        print(f"Easy: {high_scores['easy']} attempts")
-        print(f"Medium: {high_scores['medium']} attempts")
-        print(f"Hard: {high_scores['hard']} attempts")
+        print(f"Easy: {high_scores['easy']} attempts" if high_scores['easy'] else "Easy: None")
+        print(f"Medium: {high_scores['medium']} attempts" if high_scores['medium'] else "Medium: None")
+        print(f"Hard: {high_scores['hard']} attempts" if high_scores['hard'] else "Hard: None")
 
         play_again = input("\nDo you want to play again? (yes or no): ").strip().lower()
         if play_again != 'yes':
             print("Thank you for playing! Goodbye!")
+            time.sleep(2)
             break
 
 if __name__ == "__main__":
